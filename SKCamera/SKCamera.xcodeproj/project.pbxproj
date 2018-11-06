@@ -15,6 +15,8 @@
 		FE3C1CC9219134E100B57F57 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FE3C1CC8219134E100B57F57 /* main.m */; };
 		FE3C1CD3219134E100B57F57 /* SKCameraTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FE3C1CD2219134E100B57F57 /* SKCameraTests.m */; };
 		FE3C1CDE219134E100B57F57 /* SKCameraUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = FE3C1CDD219134E100B57F57 /* SKCameraUITests.m */; };
+		FE3C1CEE21913B9100B57F57 /* SKCameraView.m in Sources */ = {isa = PBXBuildFile; fileRef = FE3C1CED21913B9100B57F57 /* SKCameraView.m */; };
+		FE3C1CF121913C3D00B57F57 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE3C1CF021913C3D00B57F57 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,9 @@
 		FE3C1CD9219134E100B57F57 /* SKCameraUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SKCameraUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE3C1CDD219134E100B57F57 /* SKCameraUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SKCameraUITests.m; sourceTree = "<group>"; };
 		FE3C1CDF219134E100B57F57 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FE3C1CEC21913B9000B57F57 /* SKCameraView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKCameraView.h; sourceTree = "<group>"; };
+		FE3C1CED21913B9100B57F57 /* SKCameraView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKCameraView.m; sourceTree = "<group>"; };
+		FE3C1CF021913C3D00B57F57 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE3C1CF121913C3D00B57F57 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,10 +87,12 @@
 		FE3C1CAD219134DF00B57F57 = {
 			isa = PBXGroup;
 			children = (
+				FE3C1CEB2191364E00B57F57 /* Classes */,
 				FE3C1CB8219134DF00B57F57 /* SKCamera */,
 				FE3C1CD1219134E100B57F57 /* SKCameraTests */,
 				FE3C1CDC219134E100B57F57 /* SKCameraUITests */,
 				FE3C1CB7219134DF00B57F57 /* Products */,
+				FE3C1CEF21913C3C00B57F57 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -130,6 +138,23 @@
 				FE3C1CDF219134E100B57F57 /* Info.plist */,
 			);
 			path = SKCameraUITests;
+			sourceTree = "<group>";
+		};
+		FE3C1CEB2191364E00B57F57 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FE3C1CEC21913B9000B57F57 /* SKCameraView.h */,
+				FE3C1CED21913B9100B57F57 /* SKCameraView.m */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		FE3C1CEF21913C3C00B57F57 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FE3C1CF021913C3D00B57F57 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -265,6 +290,7 @@
 				FE3C1CBE219134DF00B57F57 /* ViewController.m in Sources */,
 				FE3C1CC9219134E100B57F57 /* main.m in Sources */,
 				FE3C1CBB219134DF00B57F57 /* AppDelegate.m in Sources */,
+				FE3C1CEE21913B9100B57F57 /* SKCameraView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,14 +459,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = LF9QD7QW56;
 				INFOPLIST_FILE = SKCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.SKVoiceWave.SKCamera;
+				PRODUCT_BUNDLE_IDENTIFIER = com.XiNanShangHui;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "19f3a4de-a068-48e4-b370-1d61ce80bdde";
+				PROVISIONING_PROFILE_SPECIFIER = XiNanShangHui_Development;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -449,14 +479,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = LF9QD7QW56;
 				INFOPLIST_FILE = SKCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.SKVoiceWave.SKCamera;
+				PRODUCT_BUNDLE_IDENTIFIER = com.XiNanShangHui;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "3e459fe1-9c77-4598-ba84-48769b9dee51";
+				PROVISIONING_PROFILE_SPECIFIER = XiNanShangHui_AdHoc;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
