@@ -17,6 +17,14 @@
 		FE3C1CDE219134E100B57F57 /* SKCameraUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = FE3C1CDD219134E100B57F57 /* SKCameraUITests.m */; };
 		FE3C1CEE21913B9100B57F57 /* SKCameraView.m in Sources */ = {isa = PBXBuildFile; fileRef = FE3C1CED21913B9100B57F57 /* SKCameraView.m */; };
 		FE3C1CF121913C3D00B57F57 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE3C1CF021913C3D00B57F57 /* AVFoundation.framework */; };
+		FE3C1CF3219179C800B57F57 /* takePic_take.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CF2219179C800B57F57 /* takePic_take.png */; };
+		FE3C1CF5219179E900B57F57 /* takePic_switch.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CF4219179E900B57F57 /* takePic_switch.png */; };
+		FE3C1CF721917A0900B57F57 /* takePic_scaleN.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CF621917A0900B57F57 /* takePic_scaleN.png */; };
+		FE3C1CF921917A2600B57F57 /* takePic_scaleH.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CF821917A2600B57F57 /* takePic_scaleH.png */; };
+		FE3C1CFB21917A4000B57F57 /* takepic_flashN.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CFA21917A3F00B57F57 /* takepic_flashN.png */; };
+		FE3C1CFD21917A5900B57F57 /* takepic_flashH.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CFC21917A5900B57F57 /* takepic_flashH.png */; };
+		FE3C1CFF21917AD900B57F57 /* takePic_netN.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CFE21917AD900B57F57 /* takePic_netN.png */; };
+		FE3C1D0121917AF100B57F57 /* takePic_netH.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1D0021917AF100B57F57 /* takePic_netH.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +64,14 @@
 		FE3C1CEC21913B9000B57F57 /* SKCameraView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKCameraView.h; sourceTree = "<group>"; };
 		FE3C1CED21913B9100B57F57 /* SKCameraView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKCameraView.m; sourceTree = "<group>"; };
 		FE3C1CF021913C3D00B57F57 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		FE3C1CF2219179C800B57F57 /* takePic_take.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takePic_take.png; sourceTree = "<group>"; };
+		FE3C1CF4219179E900B57F57 /* takePic_switch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takePic_switch.png; sourceTree = "<group>"; };
+		FE3C1CF621917A0900B57F57 /* takePic_scaleN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takePic_scaleN.png; sourceTree = "<group>"; };
+		FE3C1CF821917A2600B57F57 /* takePic_scaleH.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takePic_scaleH.png; sourceTree = "<group>"; };
+		FE3C1CFA21917A3F00B57F57 /* takepic_flashN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takepic_flashN.png; sourceTree = "<group>"; };
+		FE3C1CFC21917A5900B57F57 /* takepic_flashH.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takepic_flashH.png; sourceTree = "<group>"; };
+		FE3C1CFE21917AD900B57F57 /* takePic_netN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takePic_netN.png; sourceTree = "<group>"; };
+		FE3C1D0021917AF100B57F57 /* takePic_netH.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takePic_netH.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +161,14 @@
 			children = (
 				FE3C1CEC21913B9000B57F57 /* SKCameraView.h */,
 				FE3C1CED21913B9100B57F57 /* SKCameraView.m */,
+				FE3C1CF2219179C800B57F57 /* takePic_take.png */,
+				FE3C1CF4219179E900B57F57 /* takePic_switch.png */,
+				FE3C1CF621917A0900B57F57 /* takePic_scaleN.png */,
+				FE3C1CF821917A2600B57F57 /* takePic_scaleH.png */,
+				FE3C1CFA21917A3F00B57F57 /* takepic_flashN.png */,
+				FE3C1CFC21917A5900B57F57 /* takepic_flashH.png */,
+				FE3C1CFE21917AD900B57F57 /* takePic_netN.png */,
+				FE3C1D0021917AF100B57F57 /* takePic_netH.png */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -260,7 +284,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE3C1CF921917A2600B57F57 /* takePic_scaleH.png in Resources */,
+				FE3C1CF3219179C800B57F57 /* takePic_take.png in Resources */,
 				FE3C1CC6219134E100B57F57 /* LaunchScreen.storyboard in Resources */,
+				FE3C1CF721917A0900B57F57 /* takePic_scaleN.png in Resources */,
+				FE3C1CFD21917A5900B57F57 /* takepic_flashH.png in Resources */,
+				FE3C1D0121917AF100B57F57 /* takePic_netH.png in Resources */,
+				FE3C1CFB21917A4000B57F57 /* takepic_flashN.png in Resources */,
+				FE3C1CFF21917AD900B57F57 /* takePic_netN.png in Resources */,
+				FE3C1CF5219179E900B57F57 /* takePic_switch.png in Resources */,
 				FE3C1CC3219134E100B57F57 /* Assets.xcassets in Resources */,
 				FE3C1CC1219134DF00B57F57 /* Main.storyboard in Resources */,
 			);

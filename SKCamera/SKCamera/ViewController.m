@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "SKCameraView.h"
 
 @interface ViewController ()
 
@@ -16,7 +17,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    SKCameraView *view = [SKCameraView share];
+    [self.view addSubview:view];
+    [view setHidden:NO];
+    [view scaleBtnClcik];
 }
 
 

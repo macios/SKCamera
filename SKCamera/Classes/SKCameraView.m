@@ -15,7 +15,7 @@
 #define numCross 5
 #define numVertical 4
 
-#define SKCameraViewScreenWidth [UIApplication sharedApplication].keyWindow.bounds.size.width
+#define SKCameraViewScreenWidth [UIScreen mainScreen].bounds.size.width
 
 #define SKVIEW_W(VIEW) CGRectGetWidth(VIEW.frame)//视图宽
 #define VIEW_H(VIEW) CGRectGetHeight(VIEW.frame)//视图高
@@ -43,7 +43,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     CGFloat _beginX;
 }
 @property (nonatomic,assign)float imageCompress;
-@property (nonatomic,assign)HuTakePictureType type;
 //session：由他把输入输出结合在一起，并开始启动捕获设备（摄像头）
 @property (nonatomic, strong) AVCaptureSession *session;
 //AVCaptureDeviceInput 代表输入设备，他使用AVCaptureDevice 来初始化
@@ -68,7 +67,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 
 @property (nonatomic,strong)UIButton  *scaleBtn;//放大按钮
 @property (nonatomic,strong)UIButton *flashButton;//闪光灯按钮
-@property (nonatomic,strong)UIButton *sharpBtn;//锐化按钮
 @property (nonatomic,strong)UIButton *netBtn;//网格按钮
 @property (nonatomic,strong)UIButton *compressBtn;//压缩比按钮
 @end
@@ -205,14 +203,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     self.flashButton.frame = CGRectMake(5, 5, 30, 30);
     _flashButton.hidden = YES;
     
-    //锐化按钮
-    _sharpBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_sharpBtn setImage:[UIImage imageNamed:@"takePic_sharpN"] forState:UIControlStateNormal];
-    [_sharpBtn setImage:[UIImage imageNamed:@"takePic_sharpH"] forState:UIControlStateSelected];
-    [_sharpBtn addTarget:self action:@selector(sharpBtnClcik) forControlEvents:UIControlEventTouchUpInside];
-    [self.cameraView addSubview:_sharpBtn];
     CGFloat wideB = SKVIEW_W(self) - (5 + 15) * 2;
-    self.sharpBtn.frame = CGRectMake(20 + wideB/3.f - 15, 5, 30, 30);
     
     //网格按钮
     _netBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -270,7 +261,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     self.scaleBtn.frame = CGRectMake(0, VIEW_H(self) - smallIconWH, smallIconWH, smallIconWH);
     self.flashButton.frame = CGRectMake(5, 5, smallIconWH, smallIconWH);
     CGFloat wideB = SKVIEW_W(self) - (5 + smallIconWH/2.f) * 2;
-    self.sharpBtn.frame = CGRectMake(5 + smallIconWH/2.f + wideB/3.f - smallIconWH/2.f, 5, smallIconWH, smallIconWH);
+    
     self.netBtn.frame = CGRectMake(5 + smallIconWH/2.f + (wideB/3.f)*2 - smallIconWH/2.f, 5, smallIconWH, smallIconWH);
     _compressBtn.titleLabel.font = [UIFont systemFontOfSize:14];
     CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:14] viewHeight:20 text:@"高清"].width;
@@ -297,7 +288,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     self.scaleBtn.frame = CGRectMake(0, VIEW_H(self) - bigIconWH, bigIconWH, bigIconWH);
     self.flashButton.frame = CGRectMake(5, 5, bigIconWH, bigIconWH);
     CGFloat wideB = SKVIEW_W(self) - (5 + bigIconWH/2.f) * 2;
-    self.sharpBtn.frame = CGRectMake(5 + bigIconWH/2.f + wideB/3.f - bigIconWH/2.f, 5, bigIconWH, bigIconWH);
+   
     self.netBtn.frame = CGRectMake(5 + bigIconWH/2.f + (wideB/3.f)*2 - bigIconWH/2.f, 5, bigIconWH, bigIconWH);
     _compressBtn.titleLabel.font = [UIFont systemFontOfSize:16];
     CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:16] viewHeight:20 text:@"高清"].width;
@@ -473,7 +464,11 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     self.session = [[AVCaptureSession alloc] init];
     self.videoInput = [[AVCaptureDeviceInput alloc] initWithDevice:[self backCamera] error:nil];
     //[self fronCamera]方法会返回一个AVCaptureDevice对象，因为我初始化时是采用前摄像头，所以这么写，具体的实现方法后面会介绍
-    [self.session setSessionPreset:AVCaptureSessionPresetPhoto];//需要更加清晰的照片的话可以重新设置新值
+    if (@available(iOS 9.0, *)) {
+        [self.session setSessionPreset:AVCaptureSessionPreset3840x2160];
+    } else {
+        // Fallback on earlier versions
+    }//需要更加清晰的照片的话可以重新设置新值
     self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
     NSDictionary * outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:AVVideoCodecJPEG,AVVideoCodecKey, nil];
     //这是输出流的设置参数AVVideoCodecJPEG参数表示以JPEG的图片格式输出图片
@@ -600,7 +595,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 }
 
 -(void)takePic{
-    _type = HuTakePictureTypeNone;
     [self gainPic];
 }
 
@@ -651,7 +645,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
         gainImage = [self imageScal:gainImage];
         gainImage = [self fixOrientation:gainImage];
         if (weakSelf.donePic) {
-            weakSelf.donePic(gainImage,weakSelf.type,weakSelf.compressBtn.selected ? 1.0 : weakSelf.imageCompress);
+            weakSelf.donePic(gainImage,weakSelf.compressBtn.selected ? 1.0 : weakSelf.imageCompress);
         }
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -664,7 +658,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 #pragma mark 切换前后摄像头
 - (void)changeCamera{
     NSUInteger cameraCount = [[AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo] count];
-    
     
     if (cameraCount > 1) {
         NSError *error;
@@ -915,11 +908,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
         UIView *view = [self.cameraView viewWithTag:2000 + i];
         view.hidden = YES;
     }
-}
-
-#pragma mark 锐化
--(void)sharpBtnClcik{
-    _sharpBtn.selected = !_sharpBtn.selected;
 }
 
 #pragma mark 压缩比
