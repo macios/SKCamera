@@ -756,7 +756,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     _compressBtn.selected = !_compressBtn.selected;
 }
 
-// 计算文字的CGSize (高固定)
+// 计算文字的宽度(高固定)
 - (CGSize)countTextCGSize:(UIFont *)font
                viewHeight:(CGFloat)viewHeight
                      text:(NSString *)text {
