@@ -10,27 +10,28 @@
 #import <CoreMotion/CoreMotion.h>
 #import <AVFoundation/AVFoundation.h>
 
-#define TagSetAlert 10002
-#define TagCompressAlert 10003
-#define numCross 5
-#define numVertical 4
+#define SKTagSetAlert 10002
+#define SKTagCompressAlert 10003
+#define SKNumCross 5
+#define SKNumVertical 4
 
 #define SKCameraViewScreenWidth [UIScreen mainScreen].bounds.size.width
+#define SKCameraViewScreenHeight [UIScreen mainScreen].bounds.size.height
 
 #define SKVIEW_W(VIEW) CGRectGetWidth(VIEW.frame)//视图宽
-#define VIEW_H(VIEW) CGRectGetHeight(VIEW.frame)//视图高
-#define VIEW_CenterX(VIEW) SKVIEW_W(VIEW)/2.0//视图中心x
-#define VIEW_CenterY(VIEW) VIEW_H(VIEW)/2.0//视图中心y
+#define SKVIEW_H(VIEW) CGRectGetHeight(VIEW.frame)//视图高
+#define SKVIEW_CenterX(VIEW) SKVIEW_W(VIEW)/2.0//视图中心x
+#define SKVIEW_CenterY(VIEW) SKVIEW_H(VIEW)/2.0//视图中心y
 
-#define margin_A                    5.
-#define takePicViewWide (SKCameraViewScreenWidth/2.f)
-#define takePicViewHigh  (takePicViewWide*4/3.f)
-
-#define takePicViewBigW (SKCameraViewScreenWidth - 30)
-#define takePicViewBigH  (takePicViewBigW*4/3.f)
-
-#define smallIconWH 30
-#define bigIconWH 40
+#define SKMarginA                    5.
+//#define takePicViewWide (SKCameraViewScreenWidth/2.f)
+//#define takePicViewHigh  (takePicViewWide*4/3.f)
+//
+//#define takePicViewBigW (SKCameraViewScreenWidth - 30)
+//#define takePicViewBigH  (takePicViewBigW*4/3.f)
+//
+//#define iconWH 30
+//#define iconWH 40
 /** 前置或后置摄像头 */
 typedef NS_ENUM(NSInteger, TakePicturePosition)
 {
@@ -65,7 +66,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 @property(nonatomic,assign)CGFloat effectiveScale;//最后的缩放比例
 @property (nonatomic,strong)UIView  *focusView;//聚焦视图
 
-@property (nonatomic,strong)UIButton  *scaleBtn;//放大按钮
 @property (nonatomic,strong)UIButton *flashButton;//闪光灯按钮
 @property (nonatomic,strong)UIButton *netBtn;//网格按钮
 @property (nonatomic,strong)UIButton *compressBtn;//压缩比按钮
@@ -85,12 +85,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 
 -(instancetype)initOther{
     if (self = [super init]) {
-        
-        CGFloat wide = SKCameraViewScreenWidth / 2.f;
-        self.frame = CGRectMake(SKCameraViewScreenWidth/2.f, 0, wide, wide * 4 / 3.f);
         self.backgroundColor = [UIColor clearColor];
-        self.hidden = YES;
-//         _type = HuTakePictureTypeNone;
         [self creatView];
     }
     return self;
@@ -110,7 +105,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
                                                             message:@"你没有摄像头\n请在设备的\"设置-隐私-相机\"中允许访问相机。"
                                                            delegate:self cancelButtonTitle:@"取消"
                                                   otherButtonTitles:@"设置",nil];
-            alert.tag = TagSetAlert;
+            alert.tag = SKTagSetAlert;
             [alert show];
         }
     };
@@ -138,9 +133,9 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     
     self.effectiveScale = self.beginGestureScale = 1.0f;
     [self creatCMMotion];
-//    [self CMMotionStart];
+    [self CMMotionStart];
     self.clipsToBounds = YES;
-    [self smallFram];
+    self.frame = CGRectMake(SKCameraViewScreenWidth / 2.f, 0, SKCameraViewScreenWidth, SKCameraViewScreenHeight);
 }
 
 
@@ -148,23 +143,22 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     // 设置相机捕捉视图界面
     UIView *cameraView = [[UIView alloc] init];
     cameraView.backgroundColor = [UIColor blackColor];
-    cameraView.frame = CGRectMake(0, 0, SKVIEW_W(self), VIEW_H(self));
     cameraView.clipsToBounds = NO;
     [self addSubview:cameraView];
     self.cameraView = cameraView;
     
-    float crossWide = VIEW_H(self)/(numCross + 1);
-    for (int i = 0; i < numCross; i ++) {
-        UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, crossWide * (i + 1), SKVIEW_W(self), 0.5)];
+//    float crossWide = SKVIEW_H(self)/(SKNumCross + 1);
+    for (int i = 0; i < SKNumCross; i ++) {
+        UIView *view = [[UIView alloc]init];
         view.backgroundColor = [UIColor whiteColor];
         view.hidden = YES;
         [self.cameraView addSubview:view];
         view.tag = 1000 + i;
     }
     
-    float verWide = SKVIEW_W(self)/(numVertical + 1);
-    for (int i = 0; i < numVertical; i ++) {
-        UIView *view = [[UIView alloc]initWithFrame:CGRectMake(verWide *(i + 1), 0, 0.5, VIEW_H(self))];
+//    float verWide = SKVIEW_W(self)/(SKNumVertical + 1);
+    for (int i = 0; i < SKNumVertical; i ++) {
+        UIView *view = [[UIView alloc]init];
         view.backgroundColor = [UIColor whiteColor];
         view.hidden = YES;
         view.tag = 2000 + i;
@@ -177,22 +171,15 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [takePicBtn addTarget:self action:@selector(takePic) forControlEvents:UIControlEventTouchUpInside];
     [cameraView addSubview:takePicBtn];
     self.takePicBtn = takePicBtn;
-    self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 40)/2.f, VIEW_H(self) - 40 - 5, 40, 40);
+//    self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 40)/2.f, SKVIEW_H(self) - 40 - 5, 40, 40);
     
     //摄像头切换按钮
     self.changeCameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.changeCameraBtn setImage:[UIImage imageNamed:@"takePic_switch"] forState:UIControlStateNormal];
     [self.changeCameraBtn addTarget:self action:@selector(changeCamera) forControlEvents:UIControlEventTouchUpInside];
     [cameraView addSubview:self.changeCameraBtn];
-    self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - 35, 5, 30, 30);
+//    self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - 35, 5, 30, 30);
     self.changeCameraBtn.hidden = YES;
-    
-    self.scaleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.scaleBtn setImage:[UIImage imageNamed:@"takePic_scaleN"] forState:UIControlStateNormal];
-    [self.scaleBtn setImage:[UIImage imageNamed:@"takePic_scaleH"] forState:UIControlStateSelected];
-    [self.scaleBtn addTarget:self action:@selector(scaleBtnClcik) forControlEvents:UIControlEventTouchUpInside];
-    [cameraView addSubview:self.scaleBtn];
-    self.scaleBtn.frame = CGRectMake(0, VIEW_H(self) - 30, 30, 30);
     
     //闪光灯按钮
     _flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -200,10 +187,10 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [_flashButton setImage:[UIImage imageNamed:@"takepic_flashH"] forState:UIControlStateSelected];
     [_flashButton addTarget:self action:@selector(FlashOn) forControlEvents:UIControlEventTouchUpInside];
     [self.cameraView addSubview:_flashButton];
-    self.flashButton.frame = CGRectMake(5, 5, 30, 30);
+//    self.flashButton.frame = CGRectMake(5, 5, 30, 30);
     _flashButton.hidden = YES;
     
-    CGFloat wideB = SKVIEW_W(self) - (5 + 15) * 2;
+//    CGFloat wideB = SKVIEW_W(self) - (5 + 15) * 2;
     
     //网格按钮
     _netBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -211,12 +198,10 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [_netBtn setImage:[UIImage imageNamed:@"takePic_netH"] forState:UIControlStateSelected];
     [_netBtn addTarget:self action:@selector(netBtnClcik) forControlEvents:UIControlEventTouchUpInside];
     [self.cameraView addSubview:_netBtn];
-    self.netBtn.frame = CGRectMake(20 + (wideB/3.f)*2 - 15, 5, 30, 30);
+//    self.netBtn.frame = CGRectMake(20 + (wideB/3.f)*2 - 15, 5, 30, 30);
     
     //高清按钮
     _compressBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    [_compressBtn setImage:[UIImage imageNamed:@"takePic_netN"] forState:UIControlStateNormal];
-//    [_compressBtn setImage:[UIImage imageNamed:@"takePic_netH"] forState:UIControlStateSelected];
     [_compressBtn setTitle:@"高清" forState:UIControlStateNormal];
     [_compressBtn setTitleColor:[UIColor colorWithRed:255 / 255.0 green:193 / 255.0 blue:0 alpha:1] forState:UIControlStateSelected];
     [_compressBtn setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
@@ -224,8 +209,8 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [_compressBtn addTarget:self action:@selector(compressBtnClcik) forControlEvents:UIControlEventTouchUpInside];
     [self.cameraView addSubview:_compressBtn];
     _compressBtn.titleLabel.font = [UIFont systemFontOfSize:14];
-    CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:14] viewHeight:20 text:@"高清"].width;
-    self.compressBtn.frame = CGRectMake(SKVIEW_W(self) - comWide - margin_A, 5, comWide, 30);
+//    CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:14] viewHeight:20 text:@"高清"].width;
+//    self.compressBtn.frame = CGRectMake(SKVIEW_W(self) - comWide - SKMarginA, 5, comWide, 30);
     
     //聚焦视图
     _focusView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
@@ -249,68 +234,42 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     UIPanGestureRecognizer *pan=[[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(wayPan:)];
     pan.delegate = self;
     [self addGestureRecognizer:pan];
-    
-    
 }
 
--(void)smallFram{
-    self.frame = CGRectMake(SKCameraViewScreenWidth / 2.f, 0, takePicViewWide, takePicViewHigh);
-    self.cameraView.frame = CGRectMake(0, 0, SKVIEW_W(self), VIEW_H(self));
-    self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 40)/2.f, VIEW_H(self) - 40 - 5, 40, 40);
-    self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - smallIconWH - 5, 5, smallIconWH, smallIconWH);
-    self.scaleBtn.frame = CGRectMake(0, VIEW_H(self) - smallIconWH, smallIconWH, smallIconWH);
-    self.flashButton.frame = CGRectMake(5, 5, smallIconWH, smallIconWH);
-    CGFloat wideB = SKVIEW_W(self) - (5 + smallIconWH/2.f) * 2;
-    
-    self.netBtn.frame = CGRectMake(5 + smallIconWH/2.f + (wideB/3.f)*2 - smallIconWH/2.f, 5, smallIconWH, smallIconWH);
-    _compressBtn.titleLabel.font = [UIFont systemFontOfSize:14];
-    CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:14] viewHeight:20 text:@"高清"].width;
-    self.compressBtn.frame = CGRectMake(SKVIEW_W(self) - comWide - margin_A, 5, comWide, smallIconWH);
-    
-    float crossWide = VIEW_H(self)/(numCross + 1);
-    for (int i = 0; i < numCross; i ++) {
-        UIView *view = [self.cameraView viewWithTag:1000 + i];
-        view.frame = CGRectMake(0, crossWide * (i + 1), SKVIEW_W(self), 0.5);
-    }
-    float verWide = SKVIEW_W(self)/(numVertical + 1);
-    for (int i = 0; i < numVertical; i ++) {
-        UIView *view = [self viewWithTag:2000 + i];
-        view.frame = CGRectMake(verWide *(i + 1), 0, 0.5, VIEW_H(self));
-    }
-    
-}
+//-(void)baseView{
+//    self.frame = CGRectMake(SKCameraViewScreenWidth / 2.f, 0, SKCameraViewScreenWidth, SKCameraViewScreenHeight);
+//    self.cameraView.frame = CGRectMake(0, 0, SKVIEW_W(self), SKVIEW_H(self));
+//    self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 40)/2.f, SKVIEW_H(self) - 40 - 5, 40, 40);
+//
+//    CGFloat iconWH = 40 / SKCameraViewScreenHeight * self.frame.size.height;
+//    self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - iconWH - 5, 5, iconWH, iconWH);
+//    self.flashButton.frame = CGRectMake(5, 5, iconWH, iconWH);
+//    CGFloat wideB = SKVIEW_W(self) - (5 + iconWH/2.f) * 2;
+//
+//    self.netBtn.frame = CGRectMake(5 + iconWH/2.f + (wideB/3.f)*2 - iconWH/2.f, 5, iconWH, iconWH);
+//    _compressBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+//    CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:14] viewHeight:20 text:@"高清"].width;
+//    self.compressBtn.frame = CGRectMake(SKVIEW_W(self) - comWide - SKMarginA, 5, comWide, iconWH);
+//
+//    float crossWide = SKVIEW_H(self)/(SKNumCross + 1);
+//    for (int i = 0; i < SKNumCross; i ++) {
+//        UIView *view = [self.cameraView viewWithTag:1000 + i];
+//        view.frame = CGRectMake(0, crossWide * (i + 1), SKVIEW_W(self), 0.5);
+//    }
+//    float verWide = SKVIEW_W(self)/(SKNumVertical + 1);
+//    for (int i = 0; i < SKNumVertical; i ++) {
+//        UIView *view = [self viewWithTag:2000 + i];
+//        view.frame = CGRectMake(verWide *(i + 1), 0, 0.5, SKVIEW_H(self));
+//    }
+//
+//}
 
--(void)bigFram{
-    self.frame = CGRectMake(30, 0, takePicViewBigW, takePicViewBigH);
-    self.cameraView.frame = CGRectMake(0, 0, SKVIEW_W(self), VIEW_H(self));
-    self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 50)/2.f, VIEW_H(self) - 50 - 5, 50, 50);
-    self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - bigIconWH - 5, 5, bigIconWH, bigIconWH);
-    self.scaleBtn.frame = CGRectMake(0, VIEW_H(self) - bigIconWH, bigIconWH, bigIconWH);
-    self.flashButton.frame = CGRectMake(5, 5, bigIconWH, bigIconWH);
-    CGFloat wideB = SKVIEW_W(self) - (5 + bigIconWH/2.f) * 2;
-   
-    self.netBtn.frame = CGRectMake(5 + bigIconWH/2.f + (wideB/3.f)*2 - bigIconWH/2.f, 5, bigIconWH, bigIconWH);
-    _compressBtn.titleLabel.font = [UIFont systemFontOfSize:16];
-    CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:16] viewHeight:20 text:@"高清"].width;
-    self.compressBtn.frame = CGRectMake(SKVIEW_W(self) - comWide - margin_A, 5, comWide, bigIconWH);
-    
-    float crossWide = VIEW_H(self)/(numCross + 1);
-    for (int i = 0; i < numCross; i ++) {
-        UIView *view = [self.cameraView viewWithTag:1000 + i];
-        view.frame = CGRectMake(0, crossWide * (i + 1), SKVIEW_W(self), 0.5);
-    }
-    float verWide = SKVIEW_W(self)/(numVertical + 1);
-    for (int i = 0; i < numVertical; i ++) {
-        UIView *view = [self viewWithTag:2000 + i];
-        view.frame = CGRectMake(verWide *(i + 1), 0, 0.5, VIEW_H(self));
-    }
-    
-}
+
 
 -(void)setHidden:(BOOL)hidden{
     [super setHidden:hidden];
     if (hidden == NO) {
-        [self focusAtPoint:CGPointMake(VIEW_CenterX(self.cameraView), VIEW_CenterY(self.cameraView))];
+        [self focusAtPoint:CGPointMake(SKVIEW_CenterX(self.cameraView), SKVIEW_CenterY(self.cameraView))];
     }
 }
 
@@ -359,7 +318,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     }
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        [self focusAtPoint:CGPointMake(VIEW_CenterX(self.cameraView), VIEW_CenterY(self.cameraView))];
+        [self focusAtPoint:CGPointMake(SKVIEW_CenterX(self.cameraView), SKVIEW_CenterY(self.cameraView))];
         
         //        if (!_isSharp && [UTL isEmptyStr:USER_DEFAULTGet(UserDefSharp)]) {
         //            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"开启照片锐化" message:@"调整相机焦距会使拍摄照片模糊\n开启锐化后可改善画质" delegate:self cancelButtonTitle:@"不再提醒" otherButtonTitles:@"开启", nil];
@@ -448,7 +407,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [CATransaction commit];
     
     if (pan.state == UIGestureRecognizerStateEnded) {
-        [self focusAtPoint:CGPointMake(VIEW_CenterX(self.cameraView), VIEW_CenterY(self.cameraView))];
+        [self focusAtPoint:CGPointMake(SKVIEW_CenterX(self.cameraView), SKVIEW_CenterY(self.cameraView))];
     }
     
 }
@@ -539,7 +498,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 {
     if (self.previewLayer == nil) {
         self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
-        [self.previewLayer setFrame:CGRectMake(0, 0, SKVIEW_W(_cameraView), VIEW_H(_cameraView))];
+        [self.previewLayer setFrame:CGRectMake(0, 0, SKVIEW_W(_cameraView), SKVIEW_H(_cameraView))];
         [self.previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
         [_cameraView.layer insertSublayer:self.previewLayer below:[[_cameraView.layer sublayers] objectAtIndex:0]];
     }
@@ -647,7 +606,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
         if (weakSelf.donePic) {
             weakSelf.donePic(gainImage,weakSelf.compressBtn.selected ? 1.0 : weakSelf.imageCompress);
         }
-        
+        UIImageWriteToSavedPhotosAlbum(gainImage, self, nil, NULL);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             weakSelf.takePicBtn.enabled = YES;
         });
@@ -763,14 +722,14 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 }
 
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if(alertView.tag == TagSetAlert){
+    if(alertView.tag == SKTagSetAlert){
         if(buttonIndex==1) {
             NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
             [[UIApplication sharedApplication] openURL:url];
         }else{
             self.hidden = YES;
         }
-    }else if (alertView.tag == TagCompressAlert){
+    }else if (alertView.tag == SKTagCompressAlert){
 //        if (buttonIndex == 1) {
 //            DOffline *offline = [DDOfflineManager share].offLineInfo;
 //            offline.offLineState = YES;
@@ -795,67 +754,40 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     }
 }
 
-
--(void)smallView{
-    typeof(self) __weak weakSelf = self;
-    _scaleBtn.selected = NO;
+-(void)setFrame:(CGRect)frame{
+    [super setFrame:frame];
     self.effectiveScale = self.beginGestureScale = 1.0f;
     [self.previewLayer setAffineTransform:CGAffineTransformMakeScale(self.effectiveScale, self.effectiveScale)];
+    [self reloadFram];
     [UIView animateWithDuration:0.5 animations:^{
-        [weakSelf smallFram];
+        [self.previewLayer setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
     } completion:^(BOOL finished) {
-        [self.previewLayer setFrame:CGRectMake(0, 0, takePicViewWide, takePicViewHigh)];
     }];
 }
 
--(void)scaleSmall{
-    _scaleBtn.selected = NO;
-    typeof(self) __weak weakSelf = self;
-    if (self.scaleSmallBlcok) {
-        self.scaleSmallBlcok(YES);
-    }
-    self.effectiveScale = self.beginGestureScale = 1.0f;
-    [self.previewLayer setAffineTransform:CGAffineTransformMakeScale(self.effectiveScale, self.effectiveScale)];
-    [UIView animateWithDuration:0.5 animations:^{
-        [weakSelf smallFram];
-    } completion:^(BOOL finished) {
-        [self.previewLayer setFrame:CGRectMake(0, 0, takePicViewWide, takePicViewHigh)];
-        
-    }];
-}
-
-#pragma mark 放大缩小
--(void)scaleBtnClcik{
-    _scaleBtn.selected = !_scaleBtn.selected;
+-(void)reloadFram{
+    CGFloat iconWH = 40 / SKCameraViewScreenHeight * self.frame.size.height;
+    self.cameraView.frame = CGRectMake(0, 0, SKVIEW_W(self), SKVIEW_H(self));
+    self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 50)/2.f, SKVIEW_H(self) - 50 - 5, 50, 50);
+    self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - iconWH - 5, 5, iconWH, iconWH);
+    //    self.scaleBtn.frame = CGRectMake(0, SKVIEW_H(self) - iconWH, iconWH, iconWH);
+    self.flashButton.frame = CGRectMake(5, 5, iconWH, iconWH);
+    CGFloat wideB = SKVIEW_W(self) - (5 + iconWH/2.f) * 2;
     
-    typeof(self) __weak weakSelf = self;
-    if (_scaleBtn.selected == NO) {
-        if (self.scaleSmallBlcok) {
-            self.scaleSmallBlcok(YES);
-        }
-        self.effectiveScale = self.beginGestureScale = 1.0f;
-        [self.previewLayer setAffineTransform:CGAffineTransformMakeScale(self.effectiveScale, self.effectiveScale)];
-        [UIView animateWithDuration:0.5 animations:^{
-            [weakSelf smallFram];
-        } completion:^(BOOL finished) {
-            [self.previewLayer setFrame:CGRectMake(0, 0, takePicViewWide, takePicViewHigh)];
-            
-        }];
-        
-    }else{
-        if (self.scaleSmallBlcok) {
-            self.scaleSmallBlcok(NO);
-        }
-        self.effectiveScale = self.beginGestureScale = 1.0f;
-        [self.previewLayer setAffineTransform:CGAffineTransformMakeScale(self.effectiveScale, self.effectiveScale)];
-        [UIView animateWithDuration:0.5 animations:^{
-            [weakSelf bigFram];
-            [self.previewLayer setFrame:CGRectMake(0, 0, takePicViewBigW, takePicViewBigH)];
-            
-        } completion:^(BOOL finished) {
-            
-            
-        }];
+    self.netBtn.frame = CGRectMake(5 + iconWH/2.f + (wideB/3.f)*2 - iconWH/2.f, 5, iconWH, iconWH);
+    _compressBtn.titleLabel.font = [UIFont systemFontOfSize:16];
+    CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:16] viewHeight:20 text:@"高清"].width;
+    self.compressBtn.frame = CGRectMake(SKVIEW_W(self) - comWide - SKMarginA, 5, comWide, iconWH);
+    
+    float crossWide = SKVIEW_H(self)/(SKNumCross + 1);
+    for (int i = 0; i < SKNumCross; i ++) {
+        UIView *view = [self.cameraView viewWithTag:1000 + i];
+        view.frame = CGRectMake(0, crossWide * (i + 1), SKVIEW_W(self), 0.5);
+    }
+    float verWide = SKVIEW_W(self)/(SKNumVertical + 1);
+    for (int i = 0; i < SKNumVertical; i ++) {
+        UIView *view = [self viewWithTag:2000 + i];
+        view.frame = CGRectMake(verWide *(i + 1), 0, 0.5, SKVIEW_H(self));
     }
 }
 
@@ -889,22 +821,22 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 }
 
 -(void)netViewShow{
-    for (int i = 0; i < numCross; i ++) {
+    for (int i = 0; i < SKNumCross; i ++) {
         UIView *view = [self.cameraView viewWithTag:1000 + i];
         view.hidden = NO;
     }
-    for (int i = 0; i < numVertical; i ++) {
+    for (int i = 0; i < SKNumVertical; i ++) {
         UIView *view = [self.cameraView viewWithTag:2000 + i];
         view.hidden = NO;
     }
 }
 
 -(void)netViewHidden{
-    for (int i = 0; i < numCross; i ++) {
+    for (int i = 0; i < SKNumCross; i ++) {
         UIView *view = [self.cameraView viewWithTag:1000 + i];
         view.hidden = YES;
     }
-    for (int i = 0; i < numVertical; i ++) {
+    for (int i = 0; i < SKNumVertical; i ++) {
         UIView *view = [self.cameraView viewWithTag:2000 + i];
         view.hidden = YES;
     }
@@ -940,10 +872,10 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     CGSize targetSize;
     if (image.size.width < image.size.height) {
         //        targetSize = CGSizeMake(image.size.width,image.size.height * (1 - (ScreenHeight - HightCamera - HightCameraTop) / ScreenHeight) );
-        targetSize = CGSizeMake(image.size.width,image.size.width * 4 / 3.f );
+        targetSize = CGSizeMake(image.size.width,image.size.width * self.frame.size.height / self.frame.size.width);
     }else{
         //        targetSize = CGSizeMake(image.size.width * (1 - (ScreenHeight - HightCamera - HightCameraTop) / ScreenHeight), image.size.height);
-        targetSize = CGSizeMake(image.size.height * 4 / 3.f, image.size.height);
+        targetSize = CGSizeMake(image.size.height * self.frame.size.height / self.frame.size.width, image.size.height);
     }
     UIImage *sourceImage = image;
     UIImage *newImage = nil;

@@ -14,9 +14,5 @@
 @property(nonatomic,copy)void (^scaleSmallBlcok)(BOOL isSmall);
 
 +(instancetype)share;
--(void)hidden:(BOOL)hidden;
 -(void)cancelAction;
--(void)smallView;
--(void)scaleSmall;
--(void)scaleBtnClcik;
 @end
