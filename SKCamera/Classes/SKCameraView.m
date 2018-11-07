@@ -23,15 +23,7 @@
 #define SKVIEW_CenterX(VIEW) SKVIEW_W(VIEW)/2.0//视图中心x
 #define SKVIEW_CenterY(VIEW) SKVIEW_H(VIEW)/2.0//视图中心y
 
-#define SKMarginA                    5.
-//#define takePicViewWide (SKCameraViewScreenWidth/2.f)
-//#define takePicViewHigh  (takePicViewWide*4/3.f)
-//
-//#define takePicViewBigW (SKCameraViewScreenWidth - 30)
-//#define takePicViewBigH  (takePicViewBigW*4/3.f)
-//
-//#define iconWH 30
-//#define iconWH 40
+#define SKMarginA 5.//间距
 /** 前置或后置摄像头 */
 typedef NS_ENUM(NSInteger, TakePicturePosition)
 {
@@ -40,9 +32,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 };
 
 @interface SKCameraView()<UIGestureRecognizerDelegate>
-{
-    CGFloat _beginX;
-}
+//压缩比
 @property (nonatomic,assign)float imageCompress;
 //session：由他把输入输出结合在一起，并开始启动捕获设备（摄像头）
 @property (nonatomic, strong) AVCaptureSession *session;
@@ -59,13 +49,10 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 //是前置还是后置摄像头
 @property (nonatomic,assign)TakePicturePosition position;
 @property (nonatomic,strong) CMMotionManager *mgr;//加速器
-
 @property (nonatomic,weak)UIView *cameraView;//相机录制视图
-
 @property(nonatomic,assign)CGFloat beginGestureScale;//记录开始的缩放比例
 @property(nonatomic,assign)CGFloat effectiveScale;//最后的缩放比例
 @property (nonatomic,strong)UIView  *focusView;//聚焦视图
-
 @property (nonatomic,strong)UIButton *flashButton;//闪光灯按钮
 @property (nonatomic,strong)UIButton *netBtn;//网格按钮
 @property (nonatomic,strong)UIButton *compressBtn;//压缩比按钮
@@ -147,7 +134,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [self addSubview:cameraView];
     self.cameraView = cameraView;
     
-//    float crossWide = SKVIEW_H(self)/(SKNumCross + 1);
     for (int i = 0; i < SKNumCross; i ++) {
         UIView *view = [[UIView alloc]init];
         view.backgroundColor = [UIColor whiteColor];
@@ -156,7 +142,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
         view.tag = 1000 + i;
     }
     
-//    float verWide = SKVIEW_W(self)/(SKNumVertical + 1);
     for (int i = 0; i < SKNumVertical; i ++) {
         UIView *view = [[UIView alloc]init];
         view.backgroundColor = [UIColor whiteColor];
@@ -171,14 +156,12 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [takePicBtn addTarget:self action:@selector(takePic) forControlEvents:UIControlEventTouchUpInside];
     [cameraView addSubview:takePicBtn];
     self.takePicBtn = takePicBtn;
-//    self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 40)/2.f, SKVIEW_H(self) - 40 - 5, 40, 40);
     
     //摄像头切换按钮
     self.changeCameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.changeCameraBtn setImage:[UIImage imageNamed:@"takePic_switch"] forState:UIControlStateNormal];
     [self.changeCameraBtn addTarget:self action:@selector(changeCamera) forControlEvents:UIControlEventTouchUpInside];
     [cameraView addSubview:self.changeCameraBtn];
-//    self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - 35, 5, 30, 30);
     self.changeCameraBtn.hidden = YES;
     
     //闪光灯按钮
@@ -187,10 +170,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [_flashButton setImage:[UIImage imageNamed:@"takepic_flashH"] forState:UIControlStateSelected];
     [_flashButton addTarget:self action:@selector(FlashOn) forControlEvents:UIControlEventTouchUpInside];
     [self.cameraView addSubview:_flashButton];
-//    self.flashButton.frame = CGRectMake(5, 5, 30, 30);
     _flashButton.hidden = YES;
-    
-//    CGFloat wideB = SKVIEW_W(self) - (5 + 15) * 2;
     
     //网格按钮
     _netBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -198,7 +178,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [_netBtn setImage:[UIImage imageNamed:@"takePic_netH"] forState:UIControlStateSelected];
     [_netBtn addTarget:self action:@selector(netBtnClcik) forControlEvents:UIControlEventTouchUpInside];
     [self.cameraView addSubview:_netBtn];
-//    self.netBtn.frame = CGRectMake(20 + (wideB/3.f)*2 - 15, 5, 30, 30);
     
     //高清按钮
     _compressBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -209,8 +188,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [_compressBtn addTarget:self action:@selector(compressBtnClcik) forControlEvents:UIControlEventTouchUpInside];
     [self.cameraView addSubview:_compressBtn];
     _compressBtn.titleLabel.font = [UIFont systemFontOfSize:14];
-//    CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:14] viewHeight:20 text:@"高清"].width;
-//    self.compressBtn.frame = CGRectMake(SKVIEW_W(self) - comWide - SKMarginA, 5, comWide, 30);
     
     //聚焦视图
     _focusView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
@@ -228,43 +205,12 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(focusGesture:)];
     tapGesture.delegate = self;
     [self.cameraView addGestureRecognizer:tapGesture];
-    //    //缩放手势
-
+    
     //移动手势
     UIPanGestureRecognizer *pan=[[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(wayPan:)];
     pan.delegate = self;
     [self addGestureRecognizer:pan];
 }
-
-//-(void)baseView{
-//    self.frame = CGRectMake(SKCameraViewScreenWidth / 2.f, 0, SKCameraViewScreenWidth, SKCameraViewScreenHeight);
-//    self.cameraView.frame = CGRectMake(0, 0, SKVIEW_W(self), SKVIEW_H(self));
-//    self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 40)/2.f, SKVIEW_H(self) - 40 - 5, 40, 40);
-//
-//    CGFloat iconWH = 40 / SKCameraViewScreenHeight * self.frame.size.height;
-//    self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - iconWH - 5, 5, iconWH, iconWH);
-//    self.flashButton.frame = CGRectMake(5, 5, iconWH, iconWH);
-//    CGFloat wideB = SKVIEW_W(self) - (5 + iconWH/2.f) * 2;
-//
-//    self.netBtn.frame = CGRectMake(5 + iconWH/2.f + (wideB/3.f)*2 - iconWH/2.f, 5, iconWH, iconWH);
-//    _compressBtn.titleLabel.font = [UIFont systemFontOfSize:14];
-//    CGFloat comWide = [self countTextCGSize:[UIFont systemFontOfSize:14] viewHeight:20 text:@"高清"].width;
-//    self.compressBtn.frame = CGRectMake(SKVIEW_W(self) - comWide - SKMarginA, 5, comWide, iconWH);
-//
-//    float crossWide = SKVIEW_H(self)/(SKNumCross + 1);
-//    for (int i = 0; i < SKNumCross; i ++) {
-//        UIView *view = [self.cameraView viewWithTag:1000 + i];
-//        view.frame = CGRectMake(0, crossWide * (i + 1), SKVIEW_W(self), 0.5);
-//    }
-//    float verWide = SKVIEW_W(self)/(SKNumVertical + 1);
-//    for (int i = 0; i < SKNumVertical; i ++) {
-//        UIView *view = [self viewWithTag:2000 + i];
-//        view.frame = CGRectMake(verWide *(i + 1), 0, 0.5, SKVIEW_H(self));
-//    }
-//
-//}
-
-
 
 -(void)setHidden:(BOOL)hidden{
     [super setHidden:hidden];
@@ -296,17 +242,13 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     }
     
     if ( allTouchesAreOnThePreviewLayer ) {
-        
         self.effectiveScale = self.beginGestureScale * recognizer.scale;
         if (self.effectiveScale < 1.0){
             self.effectiveScale = 1.0;
         }
         
-        NSLog(@"%f-------------->%f------------recognizerScale%f",self.effectiveScale,self.beginGestureScale,recognizer.scale);
-        
         CGFloat maxScaleAndCropFactor = [[self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo] videoMaxScaleAndCropFactor];
         
-        NSLog(@"%f",maxScaleAndCropFactor);
         if (self.effectiveScale > maxScaleAndCropFactor)
             self.effectiveScale = maxScaleAndCropFactor;
         
@@ -319,12 +261,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         [self focusAtPoint:CGPointMake(SKVIEW_CenterX(self.cameraView), SKVIEW_CenterY(self.cameraView))];
-        
-        //        if (!_isSharp && [UTL isEmptyStr:USER_DEFAULTGet(UserDefSharp)]) {
-        //            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"开启照片锐化" message:@"调整相机焦距会使拍摄照片模糊\n开启锐化后可改善画质" delegate:self cancelButtonTitle:@"不再提醒" otherButtonTitles:@"开启", nil];
-        //            alert.tag = TagSharpAlert;
-        //            [alert show];
-        //        }
     }
 }
 
@@ -364,29 +300,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
         }];
     }
 }
-//
-//-(void)wayPinch:(UIPinchGestureRecognizer *)pin
-//{
-//    if (pin.state==UIGestureRecognizerStateBegan||pin.state==UIGestureRecognizerStateChanged) {
-//        /*1.最初的状态pin.view.
-//         2.宽的放大或缩小pin.scale
-//         3.高的放大或缩小*/
-//        pin.view.transform=CGAffineTransformScale(pin.view.transform, pin.scale, pin.scale);
-//        pin.scale=1;
-//    }
-//}
-//
-//-(void)wayPan:(UIPanGestureRecognizer *)pan
-//{
-//    //    NSLog(@"%ld",pan.view.tag);
-//    //pan.state状态
-//    if(pan.state==UIGestureRecognizerStateBegan||pan.state==UIGestureRecognizerStateChanged) {
-//        CGPoint point=[pan translationInView:[UIApplication sharedApplication].keyWindow];
-//        pan.view.center=CGPointMake(pan.view.center.x+point.x, pan.view.center.y+point.y);
-//        //清零
-//        [pan setTranslation:CGPointZero inView:[UIApplication sharedApplication].keyWindow];
-//    }
-//}
 
 -(void)wayPan:(UIPanGestureRecognizer *)pan{
     CGPoint point=[pan translationInView:[UIApplication sharedApplication].keyWindow];
@@ -395,9 +308,8 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     if (self.effectiveScale < 1.0){
         self.effectiveScale = 1.0;
     }
-    CGFloat maxScaleAndCropFactor = [[self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo] videoMaxScaleAndCropFactor];
     
-    NSLog(@"%f",maxScaleAndCropFactor);
+    CGFloat maxScaleAndCropFactor = [[self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo] videoMaxScaleAndCropFactor];
     if (self.effectiveScale > maxScaleAndCropFactor)
         self.effectiveScale = maxScaleAndCropFactor;
     
@@ -426,7 +338,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     if (@available(iOS 9.0, *)) {
         [self.session setSessionPreset:AVCaptureSessionPreset3840x2160];
     } else {
-        // Fallback on earlier versions
+        [self.session setSessionPreset:AVCaptureSessionPresetHigh];
     }//需要更加清晰的照片的话可以重新设置新值
     self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
     NSDictionary * outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:AVVideoCodecJPEG,AVVideoCodecKey, nil];
@@ -448,18 +360,21 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     [self setUpCameraLayer];
     
     if ([_device lockForConfiguration:nil]) {
-        //自动闪光灯
+        //自动闪光灯关
         if ([_device isFlashModeSupported:AVCaptureFlashModeOff]) {
             [_device setFlashMode:AVCaptureFlashModeOff];
         }
+        
         //自动白平衡
         if ([_device isWhiteBalanceModeSupported:AVCaptureWhiteBalanceModeAutoWhiteBalance]) {
             [_device setWhiteBalanceMode:AVCaptureWhiteBalanceModeAutoWhiteBalance];
         }
+        
         //自动对焦
         if ([_device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
             [_device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
         }
+        
         //自动曝光
         if ([_device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
             [_device setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
@@ -494,8 +409,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     }
 }
 
-- (void)setUpCameraLayer
-{
+- (void)setUpCameraLayer{
     if (self.previewLayer == nil) {
         self.previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:self.session];
         [self.previewLayer setFrame:CGRectMake(0, 0, SKVIEW_W(_cameraView), SKVIEW_H(_cameraView))];
@@ -526,8 +440,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     return !(authStatus == AVAuthorizationStatusDenied || authStatus == AVAuthorizationStatusRestricted);
 }
 
--(BOOL)isCameraAvailable
-{
+-(BOOL)isCameraAvailable{
     NSArray *mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
     BOOL isAvailable =  [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
     
@@ -620,13 +533,9 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     
     if (cameraCount > 1) {
         NSError *error;
-        
         CATransition *animation = [CATransition animation];
-        
         animation.duration = .5f;
-        
         animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        
         animation.type = @"oglFlip";
         AVCaptureDevice *newCamera = nil;
         AVCaptureDeviceInput *newInput = nil;
@@ -652,9 +561,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
             } else {
                 [self.session addInput:self.videoInput];
             }
-            
             [self.session commitConfiguration];
-            
         } else if (error) {
             NSLog(@"toggle carema failed, error = %@", error);
         }
@@ -663,11 +570,8 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 
 #pragma mark 拍照方向
 - (void)outputAccelertionData:(CMAcceleration)acceleration{
-    
     CGFloat xx = acceleration.x;
-    
     CGFloat yy = acceleration.y;
-    
     CGFloat zz = acceleration.z;
     
     CGFloat device_angle = M_PI / 2.0f - atan2(yy, xx);
@@ -676,45 +580,37 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     }
     if ((zz < -.60f) || (zz > .60f)) {
         if ( (device_angle > -M_PI_4) && (device_angle < M_PI_4) ){
-            if(_deviceOrientation != AVCaptureVideoOrientationPortraitUpsideDown)
-            {
+            if(_deviceOrientation != AVCaptureVideoOrientationPortraitUpsideDown){
                 _deviceOrientation = AVCaptureVideoOrientationPortraitUpsideDown;//手机右放（眼对着屏幕）
             }
         }else if ((device_angle < -M_PI_4) && (device_angle > -3 * M_PI_4)){
-            if(_deviceOrientation != AVCaptureVideoOrientationLandscapeRight)
-            {
+            if(_deviceOrientation != AVCaptureVideoOrientationLandscapeRight){
                 _deviceOrientation = AVCaptureVideoOrientationLandscapeRight;//手机左放（眼对着屏幕）
             }
         }else if ((device_angle > M_PI_4) && (device_angle < 3 * M_PI_4)){
-            if(_deviceOrientation != AVCaptureVideoOrientationLandscapeLeft)
-            {
+            if(_deviceOrientation != AVCaptureVideoOrientationLandscapeLeft){
                 _deviceOrientation = AVCaptureVideoOrientationLandscapeLeft;//手机右放（眼对着屏幕）
             }
         }else{
-            if(_deviceOrientation != AVCaptureVideoOrientationPortrait)
-            {
+            if(_deviceOrientation != AVCaptureVideoOrientationPortrait){
                 _deviceOrientation = AVCaptureVideoOrientationPortrait;//手机右放（眼对着屏幕）
             }
         }
     } else {
         if ( (device_angle > -M_PI_4) && (device_angle < M_PI_4) ){
-            if(_deviceOrientation != AVCaptureVideoOrientationPortraitUpsideDown)
-            {
+            if(_deviceOrientation != AVCaptureVideoOrientationPortraitUpsideDown){
                 _deviceOrientation = AVCaptureVideoOrientationPortraitUpsideDown;//手机右放（眼对着屏幕）
             }
         }else if ((device_angle < -M_PI_4) && (device_angle > -3 * M_PI_4)){
-            if(_deviceOrientation != AVCaptureVideoOrientationLandscapeRight)
-            {
+            if(_deviceOrientation != AVCaptureVideoOrientationLandscapeRight){
                 _deviceOrientation = AVCaptureVideoOrientationLandscapeRight;//手机右放（眼对着屏幕）
             }
         }else if ((device_angle > M_PI_4) && (device_angle < 3 * M_PI_4)){
-            if(_deviceOrientation != AVCaptureVideoOrientationLandscapeLeft)
-            {
+            if(_deviceOrientation != AVCaptureVideoOrientationLandscapeLeft){
                 _deviceOrientation = AVCaptureVideoOrientationLandscapeLeft;//手机右放（眼对着屏幕）
             }
         }else{
-            if(_deviceOrientation != AVCaptureVideoOrientationPortrait)
-            {
+            if(_deviceOrientation != AVCaptureVideoOrientationPortrait){
                 _deviceOrientation = AVCaptureVideoOrientationPortrait;//手机右放（眼对着屏幕）
             }
         }
@@ -730,12 +626,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
             self.hidden = YES;
         }
     }else if (alertView.tag == SKTagCompressAlert){
-//        if (buttonIndex == 1) {
-//            DOffline *offline = [DDOfflineManager share].offLineInfo;
-//            offline.offLineState = YES;
-//            [DDOfflineManager share].offLineInfo = offline;
-//        }else{
-//        }
     }
 }
 
@@ -804,10 +694,8 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
                 [_device setFlashMode:AVCaptureFlashModeOn];
             }
         }
-        
         [_device unlockForConfiguration];
     }
-    
 }
 
 #pragma mark 网格
@@ -857,13 +745,9 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     
     //计算实际frame大小，并将label的frame变成实际大小
     CGSize txtSize;
-//    if (IOS7_OR_LATER) {
-        NSStringDrawingOptions options = NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
-        CGRect txtRT = [text boundingRectWithSize:size options:options attributes:@{NSFontAttributeName:font} context:nil];
-        txtSize = txtRT.size;
-//    } else {
-//        txtSize = [text sizeWithFont:font constrainedToSize:size lineBreakMode:NSLineBreakByWordWrapping];
-//    }
+    NSStringDrawingOptions options = NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
+    CGRect txtRT = [text boundingRectWithSize:size options:options attributes:@{NSFontAttributeName:font} context:nil];
+    txtSize = txtRT.size;
     return txtSize;
 }
 
@@ -871,10 +755,8 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 {
     CGSize targetSize;
     if (image.size.width < image.size.height) {
-        //        targetSize = CGSizeMake(image.size.width,image.size.height * (1 - (ScreenHeight - HightCamera - HightCameraTop) / ScreenHeight) );
         targetSize = CGSizeMake(image.size.width,image.size.width * self.frame.size.height / self.frame.size.width);
     }else{
-        //        targetSize = CGSizeMake(image.size.width * (1 - (ScreenHeight - HightCamera - HightCameraTop) / ScreenHeight), image.size.height);
         targetSize = CGSizeMake(image.size.height * self.frame.size.height / self.frame.size.width, image.size.height);
     }
     UIImage *sourceImage = image;
@@ -893,7 +775,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     {
         CGFloat widthFactor = targetWidth / width;
         CGFloat heightFactor = targetHeight / height;
-        
         if (widthFactor > heightFactor)
             scaleFactor = widthFactor; // scale to fit height
         else
@@ -911,7 +792,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
             thumbnailPoint.x = (targetWidth - scaledWidth) * 0.5;
         }
     }
-    
     UIGraphicsBeginImageContext(targetSize); // this will crop
     
     CGRect thumbnailRect = CGRectZero;
@@ -939,29 +819,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     // We need to calculate the proper transformation to make the image upright.
     // We do it in 2 steps: Rotate if Left/Right/Down, and then flip if Mirrored.
     CGAffineTransform transform = CGAffineTransformIdentity;
-    
-//    switch (aImage.imageOrientation) {
-//        case UIImageOrientationDown:
-//        case UIImageOrientationDownMirrored:
-//            transform = CGAffineTransformTranslate(transform, aImage.size.width, aImage.size.height);
-//            transform = CGAffineTransformRotate(transform, M_PI);
-//            break;
-//
-//        case UIImageOrientationLeft:
-//        case UIImageOrientationLeftMirrored:
-//            transform = CGAffineTransformTranslate(transform, aImage.size.width, 0);
-//            transform = CGAffineTransformRotate(transform, M_PI_2);
-//            break;
-//
-//        case UIImageOrientationRight:
-//        case UIImageOrientationRightMirrored:
-//            transform = CGAffineTransformTranslate(transform, 0, aImage.size.height);
-//            transform = CGAffineTransformRotate(transform, -M_PI_2);
-//            break;
-//        default:
-//            break;
-//    }
-    
     switch (aImage.imageOrientation) {
         case UIImageOrientationUpMirrored:
         case UIImageOrientationDownMirrored:
@@ -1008,4 +865,3 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 }
 
 @end
-
