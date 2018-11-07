@@ -22,6 +22,9 @@
     view.frame = CGRectMake((self.view.bounds.size.width - 200) / 2.f, (self.view.bounds.size.height - 500) / 2.f, 200, 500);
     [self.view addSubview:view];
     [view setHidden:NO];
+    view.donePic = ^(UIImage *image, float compress) {
+        NSLog(@"获得照片%@",image);
+    };
 //    [view scaleBtnClcik];
 }
 

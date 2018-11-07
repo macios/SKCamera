@@ -12,6 +12,8 @@
 
 #define SKTagSetAlert 10002
 #define SKTagCompressAlert 10003
+#define SKTagCross 1000
+#define SKTagVertical 2000
 #define SKNumCross 5
 #define SKNumVertical 4
 
@@ -73,6 +75,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 -(instancetype)initOther{
     if (self = [super init]) {
         self.backgroundColor = [UIColor clearColor];
+        self.imageCompress = 1.;
         [self creatView];
     }
     return self;
@@ -139,14 +142,14 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
         view.backgroundColor = [UIColor whiteColor];
         view.hidden = YES;
         [self.cameraView addSubview:view];
-        view.tag = 1000 + i;
+        view.tag = SKTagCross + i;
     }
     
     for (int i = 0; i < SKNumVertical; i ++) {
         UIView *view = [[UIView alloc]init];
         view.backgroundColor = [UIColor whiteColor];
         view.hidden = YES;
-        view.tag = 2000 + i;
+        view.tag = SKTagVertical + i;
         [self.cameraView addSubview:view];
     }
     
@@ -660,7 +663,6 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     self.cameraView.frame = CGRectMake(0, 0, SKVIEW_W(self), SKVIEW_H(self));
     self.takePicBtn.frame = CGRectMake((SKVIEW_W(self) - 50)/2.f, SKVIEW_H(self) - 50 - 5, 50, 50);
     self.changeCameraBtn.frame = CGRectMake(SKVIEW_W(self) - iconWH - 5, 5, iconWH, iconWH);
-    //    self.scaleBtn.frame = CGRectMake(0, SKVIEW_H(self) - iconWH, iconWH, iconWH);
     self.flashButton.frame = CGRectMake(5, 5, iconWH, iconWH);
     CGFloat wideB = SKVIEW_W(self) - (5 + iconWH/2.f) * 2;
     
@@ -671,13 +673,13 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
     
     float crossWide = SKVIEW_H(self)/(SKNumCross + 1);
     for (int i = 0; i < SKNumCross; i ++) {
-        UIView *view = [self.cameraView viewWithTag:1000 + i];
-        view.frame = CGRectMake(0, crossWide * (i + 1), SKVIEW_W(self), 0.5);
+        UIView *view = [self.cameraView viewWithTag:SKTagCross + i];
+        view.frame = CGRectMake(0, crossWide * (i + 1), 0, 0.5);
     }
     float verWide = SKVIEW_W(self)/(SKNumVertical + 1);
     for (int i = 0; i < SKNumVertical; i ++) {
-        UIView *view = [self viewWithTag:2000 + i];
-        view.frame = CGRectMake(verWide *(i + 1), 0, 0.5, SKVIEW_H(self));
+        UIView *view = [self.cameraView viewWithTag:SKTagVertical + i];
+        view.frame = CGRectMake(verWide *(i + 1), 0, 0.5, 0);
     }
 }
 
@@ -710,23 +712,42 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 
 -(void)netViewShow{
     for (int i = 0; i < SKNumCross; i ++) {
-        UIView *view = [self.cameraView viewWithTag:1000 + i];
-        view.hidden = NO;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            UIView *view = [self.cameraView viewWithTag:SKTagCross + i];
+            view.hidden = NO;
+            [UIView animateWithDuration:0.4 animations:^{
+                view.frame = CGRectMake(CGRectGetMinX(view.frame), CGRectGetMinY(view.frame), SKVIEW_W(self), SKVIEW_H(view));
+            }];
+        });
     }
     for (int i = 0; i < SKNumVertical; i ++) {
-        UIView *view = [self.cameraView viewWithTag:2000 + i];
-        view.hidden = NO;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * i * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            UIView *view = [self.cameraView viewWithTag:SKTagVertical + i];
+            view.hidden = NO;
+            [UIView animateWithDuration:0.4 animations:^{
+                view.frame = CGRectMake(CGRectGetMinX(view.frame), CGRectGetMinY(view.frame), SKVIEW_W(view), SKVIEW_H(self));
+            }];
+        });
+        
     }
 }
 
 -(void)netViewHidden{
     for (int i = 0; i < SKNumCross; i ++) {
-        UIView *view = [self.cameraView viewWithTag:1000 + i];
-        view.hidden = YES;
+        UIView *view = [self.cameraView viewWithTag:SKTagCross + i];
+        [UIView animateWithDuration:0.2 animations:^{
+            view.frame = CGRectMake(CGRectGetMinX(view.frame), CGRectGetMinY(view.frame), 0, SKVIEW_H(view));
+        } completion:^(BOOL finished) {
+            view.hidden = YES;
+        }];
     }
     for (int i = 0; i < SKNumVertical; i ++) {
-        UIView *view = [self.cameraView viewWithTag:2000 + i];
-        view.hidden = YES;
+        UIView *view = [self.cameraView viewWithTag:SKTagVertical + i];
+        [UIView animateWithDuration:0.2 animations:^{
+            view.frame = CGRectMake(CGRectGetMinX(view.frame), CGRectGetMinY(view.frame), SKVIEW_W(view), 0);
+        } completion:^(BOOL finished) {
+            view.hidden = YES;
+        }];
     }
 }
 
