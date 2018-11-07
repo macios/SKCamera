@@ -35,8 +35,7 @@ typedef NS_ENUM(NSInteger, TakePicturePosition)
 };
 
 @interface SKCameraView()<UIGestureRecognizerDelegate>
-//压缩比
-@property (nonatomic,assign)float imageCompress;
+
 //session：由他把输入输出结合在一起，并开始启动捕获设备（摄像头）
 @property (nonatomic, strong) AVCaptureSession *session;
 //AVCaptureDeviceInput 代表输入设备，他使用AVCaptureDevice 来初始化
