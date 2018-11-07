@@ -25,6 +25,7 @@
 		FE3C1CFD21917A5900B57F57 /* takepic_flashH.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CFC21917A5900B57F57 /* takepic_flashH.png */; };
 		FE3C1CFF21917AD900B57F57 /* takePic_netN.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1CFE21917AD900B57F57 /* takePic_netN.png */; };
 		FE3C1D0121917AF100B57F57 /* takePic_netH.png in Resources */ = {isa = PBXBuildFile; fileRef = FE3C1D0021917AF100B57F57 /* takePic_netH.png */; };
+		FEAB5B922192932100070019 /* UIImage+SKImage.m in Sources */ = {isa = PBXBuildFile; fileRef = FEAB5B912192932100070019 /* UIImage+SKImage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,8 @@
 		FE3C1CFC21917A5900B57F57 /* takepic_flashH.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takepic_flashH.png; sourceTree = "<group>"; };
 		FE3C1CFE21917AD900B57F57 /* takePic_netN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takePic_netN.png; sourceTree = "<group>"; };
 		FE3C1D0021917AF100B57F57 /* takePic_netH.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = takePic_netH.png; sourceTree = "<group>"; };
+		FEAB5B902192932100070019 /* UIImage+SKImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+SKImage.h"; sourceTree = "<group>"; };
+		FEAB5B912192932100070019 /* UIImage+SKImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImage+SKImage.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +164,8 @@
 			children = (
 				FE3C1CEC21913B9000B57F57 /* SKCameraView.h */,
 				FE3C1CED21913B9100B57F57 /* SKCameraView.m */,
+				FEAB5B902192932100070019 /* UIImage+SKImage.h */,
+				FEAB5B912192932100070019 /* UIImage+SKImage.m */,
 				FE3C1CF2219179C800B57F57 /* takePic_take.png */,
 				FE3C1CF4219179E900B57F57 /* takePic_switch.png */,
 				FE3C1CF621917A0900B57F57 /* takePic_scaleN.png */,
@@ -320,6 +325,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FE3C1CBE219134DF00B57F57 /* ViewController.m in Sources */,
+				FEAB5B922192932100070019 /* UIImage+SKImage.m in Sources */,
 				FE3C1CC9219134E100B57F57 /* main.m in Sources */,
 				FE3C1CBB219134DF00B57F57 /* AppDelegate.m in Sources */,
 				FE3C1CEE21913B9100B57F57 /* SKCameraView.m in Sources */,

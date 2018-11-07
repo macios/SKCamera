@@ -23,7 +23,7 @@
     [self.view addSubview:view];
     [view setHidden:NO];
     view.donePic = ^(UIImage *image, float compress) {
-        NSLog(@"获得照片%@",image);
+        UIImageWriteToSavedPhotosAlbum(image,self,nil,NULL);//保存图片到相册
     };
 //    [view scaleBtnClcik];
 }
